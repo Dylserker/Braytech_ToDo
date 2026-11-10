@@ -16,17 +16,17 @@ function Header() {
       </a>
 
       <nav className="header-nav" aria-label="Navigation principale">
-        <a className="header-nav__link header-nav__link--active" href="#overview">
+        <a className="header-nav__link header-nav__link--active" href="#planning">
           <span className="header-nav__index">01</span>
-          Aperçu
+          Planning
         </a>
-        <a className="header-nav__link" href="#tasks">
+        <a className="header-nav__link" href="#succes">
           <span className="header-nav__index">02</span>
-          Tâches
+          Succès
         </a>
-        <a className="header-nav__link" href="#archives">
+        <a className="header-nav__link" href="#contact">
           <span className="header-nav__index">03</span>
-          Archives
+          Contact
         </a>
       </nav>
 

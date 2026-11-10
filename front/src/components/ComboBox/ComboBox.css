@@ -1,0 +1,42 @@
+.combo-box {
+  display: grid;
+  gap: 7px;
+}
+
+.combo-box label {
+  color: #a7b8b8;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.combo-box select {
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, #e98125 50%) calc(100% - 16px) 50% / 5px 5px no-repeat,
+    linear-gradient(135deg, #e98125 50%, transparent 50%) calc(100% - 12px) 50% / 5px 5px no-repeat,
+    #16252a;
+  border: 1px solid rgba(140, 163, 167, 0.35);
+  border-radius: 0;
+  box-sizing: border-box;
+  color: #eef4f3;
+  font: inherit;
+  padding: 11px 36px 11px 12px;
+  width: 100%;
+}
+
+.combo-box select:focus {
+  border-color: #52c3b0;
+  outline: 2px solid rgba(82, 195, 176, 0.18);
+}
+
+.combo-box select:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.combo-box option {
+  background: #101b20;
+  color: #eef4f3;
+}
