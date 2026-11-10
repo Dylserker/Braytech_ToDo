@@ -1,18 +1,33 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@300;400;500&family=Syncopate:wght@400;700&display=swap');
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+:root {
+  /* Couleurs issues directement du logo */
+  --logo-green: #1db77e;
+  --logo-carbon: #3e3443;
+  --logo-bg-light: #f0f2f2;
+
+  /* Couleurs d'interface */
+  --bray-border: rgba(62, 52, 67, 0.2);
+  --glow-effect: drop-shadow(0 0 8px rgba(29, 183, 126, 0.6));
+
+  --text: #625a69;
+  --text-h: var(--logo-carbon);
+  --bg: var(--logo-bg-light);
+  --border: var(--bray-border);
+  --code-bg: #e4e9e8;
+  --accent: var(--logo-green);
+  --accent-bg: rgba(29, 183, 126, 0.12);
+  --accent-border: rgba(29, 183, 126, 0.6);
+  --social-bg: rgba(255, 255, 255, 0.65);
+  --accent-line: #d49e35;
+  --grid-line: rgba(62, 52, 67, 0.07);
+  --shadow:
+    rgba(62, 52, 67, 0.14) 0 10px 15px -3px,
+    rgba(62, 52, 67, 0.08) 0 4px 6px -2px;
+
+  --sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Montserrat', 'Inter', system-ui, sans-serif;
+  --technical: 'Syncopate', 'Inter', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
@@ -32,17 +47,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
+    --text: #d3ced5;
+    --text-h: #f4f6f5;
+    --bg: #211c24;
+    --border: rgba(240, 242, 242, 0.2);
+    --code-bg: #302934;
+    --accent-bg: rgba(29, 183, 126, 0.18);
+    --accent-border: rgba(29, 183, 126, 0.75);
+    --social-bg: rgba(62, 52, 67, 0.7);
+    --grid-line: rgba(240, 242, 242, 0.06);
     --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px,
+      rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
   #social .button-icon {
@@ -64,6 +80,11 @@
 
 body {
   margin: 0;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 h1,
@@ -75,11 +96,34 @@ h2 {
 
 h1 {
   font-size: 56px;
-  letter-spacing: -1.68px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   margin: 32px 0;
   @media (max-width: 1024px) {
     font-size: 36px;
     margin: 20px 0;
+  }
+
+  .technical-data {
+    font-family: var(--technical);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.4em;
+    line-height: 145%;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .logo-glow {
+    filter: var(--glow-effect);
+  }
+
+  .accent-line {
+    width: 100%;
+    height: 1px;
+    background: var(--accent-line);
+    box-shadow: 0 0 8px rgba(212, 158, 53, 0.35);
   }
 }
 h2 {
