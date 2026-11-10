@@ -16,7 +16,7 @@ function Header() {
       </a>
 
       <nav className="header-nav" aria-label="Navigation principale">
-        <a className="header-nav__link header-nav__link--active" href="#planning">
+        <a className="header-nav__link header-nav__link--active" href="/planning">
           <span className="header-nav__index">01</span>
           Planning
         </a>

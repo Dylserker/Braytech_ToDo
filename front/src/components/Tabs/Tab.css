@@ -1,0 +1,25 @@
+.tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #8ca3a7;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  padding: 11px 14px 10px;
+  text-transform: uppercase;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.tab:hover,
+.tab--active {
+  background: rgba(36, 125, 135, 0.14);
+  border-bottom-color: #e98125;
+  color: #eef4f3;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #52c3b0;
+  outline-offset: -2px;
+}

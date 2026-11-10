@@ -1,0 +1,64 @@
+.bray-card {
+  background:
+    linear-gradient(125deg, rgba(52, 151, 164, 0.08), transparent 40%),
+    #101b20;
+  border: 1px solid rgba(140, 163, 167, 0.32);
+  min-width: 0;
+  padding: 18px;
+  position: relative;
+}
+
+.bray-card::before {
+  background: #e98125;
+  content: '';
+  height: 2px;
+  left: 18px;
+  position: absolute;
+  top: -1px;
+  width: 42px;
+}
+
+.bray-card__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.bray-card__eyebrow,
+.bray-card__meta {
+  color: #64b7b7;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bray-card__eyebrow {
+  margin-bottom: 6px;
+}
+
+.bray-card h3 {
+  color: #eef4f3;
+  font-family: var(--heading);
+  font-size: 0.84rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.bray-card__meta {
+  color: #e98125;
+  white-space: nowrap;
+}
+
+.bray-card__body {
+  color: #a7b8b8;
+  font-size: 0.78rem;
+  margin-top: 14px;
+}
+
+.bray-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}

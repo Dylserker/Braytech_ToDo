@@ -1,0 +1,8 @@
+.planning-layout {
+  box-sizing: border-box;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 960px;
+  width: 100%;
+}

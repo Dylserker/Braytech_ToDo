@@ -1,0 +1,16 @@
+.home-layout {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  margin-top: 48px;
+  max-width: 960px;
+  text-align: left;
+  width: 100%;
+}
+
+@media (max-width: 650px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    margin-top: 32px;
+  }
+}

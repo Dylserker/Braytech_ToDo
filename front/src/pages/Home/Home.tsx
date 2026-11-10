@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import Button from '../../components/Buttons/Buttons'
+import Card from '../../components/Cards/Cards'
 import ComboBox from '../../components/ComboBox/ComboBox'
 import Header from '../../components/Header/Header'
 import Modal from '../../components/Modals/Modal'
 import { DESTINY_CATEGORIES, type DestinyCategory } from '../../constants/destinyCategories'
+import HomeLayout from '../../layouts/HomeLayout/HomeLayout'
 import './Home.css'
 
 type Task = {
@@ -92,47 +94,74 @@ function Home() {
     <>
       <Header />
       <main className="home">
-        <p className="home__eyebrow">BRAYTECH / PLANNING</p>
-        <h1>Votre planning</h1>
-        <p className="home__intro">Organisez vos prochaines missions avec précision.</p>
-        <Button type="button" onClick={openNewTaskModal}>
-          + Nouvelle tâche
-        </Button>
+        <p className="home__eyebrow">BRAYTECH / HOME</p>
+        <div className="home__heading">
+          <div>
+            <h1>Centre de contrôle</h1>
+            <p className="home__intro">Suivez vos tâches et votre progression.</p>
+          </div>
+          <Button type="button" onClick={openNewTaskModal}>
+            + Nouvelle tâche
+          </Button>
+        </div>
 
-        {tasks.length > 0 && (
-          <section className="home__tasks" aria-label="Tâches créées">
-            {tasks.map((task, index) => (
-              <article className="task-card" key={`${task.title}-${index}`}>
-                <span className="task-card__index">{String(index + 1).padStart(2, '0')}</span>
-                <div className="task-card__content">
-                  <strong>{task.title}</strong>
-                  <span>
-                    {task.category} / {task.difficulty ? `${task.difficulty} / ` : ''}
-                    {task.mission}
-                  </span>
+        <HomeLayout>
+          <section className="home__section" aria-labelledby="today-title">
+            <div className="home__section-heading">
+              <p className="home__section-eyebrow">01 / JOUR ACTUEL</p>
+              <h2 id="today-title">Aujourd’hui</h2>
+            </div>
+            <div className="home__cards">
+              {tasks.length === 0 && (
+                <div className="home__empty">
+                  <span>—</span>
+                  Aucune tâche planifiée pour aujourd’hui.
                 </div>
-                <div className="task-card__actions">
-                  <Button
-                    className="task-card__action"
-                    type="button"
-                    variant="secondary"
-                    onClick={() => openEditTaskModal(task, index)}
-                  >
-                    Modifier
-                  </Button>
-                  <Button
-                    className="task-card__action"
-                    type="button"
-                    variant="danger"
-                    onClick={() => removeTask(index)}
-                  >
-                    Supprimer
-                  </Button>
-                </div>
-              </article>
-            ))}
+              )}
+              {tasks.map((task, index) => (
+                <Card
+                  key={`${task.title}-${index}`}
+                  eyebrow={`${task.category}${task.difficulty ? ` / ${task.difficulty}` : ''}`}
+                  meta={`T-${String(index + 1).padStart(2, '0')}`}
+                  title={task.title}
+                  actions={
+                    <>
+                      <Button
+                        className="task-card__action"
+                        type="button"
+                        variant="secondary"
+                        onClick={() => openEditTaskModal(task, index)}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        className="task-card__action"
+                        type="button"
+                        variant="danger"
+                        onClick={() => removeTask(index)}
+                      >
+                        Supprimer
+                      </Button>
+                    </>
+                  }
+                >
+                  {task.mission}
+                </Card>
+              ))}
+            </div>
           </section>
-        )}
+          <section className="home__section" aria-labelledby="success-title">
+            <div className="home__section-heading">
+              <p className="home__section-eyebrow">02 / PROGRESSION</p>
+              <h2 id="success-title">Succès en cours</h2>
+            </div>
+            <div className="home__cards">
+              <Card eyebrow="BRAYTECH / OBJECTIF" meta="0%" title="Aucun succès actif">
+                Les succès en cours apparaîtront ici.
+              </Card>
+            </div>
+          </section>
+        </HomeLayout>
       </main>
       <Modal
         eyebrow={editingTaskIndex === null ? 'Nouvelle entrée' : 'Modification'}

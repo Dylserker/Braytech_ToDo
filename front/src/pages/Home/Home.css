@@ -21,53 +21,123 @@
   margin-bottom: 28px;
 }
 
-.home__tasks {
-  display: grid;
-  gap: 10px;
-  margin-top: 48px;
-  max-width: 620px;
+.home__heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 960px;
+  text-align: center;
+  width: 100%;
+}
+
+.home__heading h1 {
+  font-size: 40px;
+  margin: 0 0 10px;
+}
+
+.calendar-panel {
+  background:
+    linear-gradient(110deg, rgba(52, 151, 164, 0.1), transparent 42%),
+    #101b20;
+  border: 1px solid rgba(236, 138, 38, 0.42);
+  margin-top: 16px;
+  max-width: 760px;
+  padding: 20px 22px 0;
   text-align: left;
   width: 100%;
 }
 
-.task-card {
+.calendar-panel__topline,
+.calendar-panel__controls,
+.calendar-panel__navigation {
   align-items: center;
-  background: #101b20;
-  border: 1px solid rgba(140, 163, 167, 0.32);
   display: flex;
-  gap: 16px;
-  padding: 16px 18px;
 }
 
-.task-card__index {
-  color: #e98125;
-  font-family: var(--mono);
-  font-size: 0.7rem;
+.calendar-panel__topline {
+  justify-content: space-between;
 }
 
-.task-card__content {
-  display: grid;
-  flex: 1;
-  gap: 5px;
-}
-
-.task-card__content strong {
-  color: #eef4f3;
-  font-family: var(--heading);
-  font-size: 0.86rem;
-  font-weight: 500;
-}
-
-.task-card__content span {
+.calendar-panel__eyebrow {
   color: #64b7b7;
   font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.05em;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  margin-bottom: 7px;
 }
 
-.task-card__actions {
+.calendar-panel strong {
+  color: #eef4f3;
+  font-family: var(--heading);
+  font-size: 1rem;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.calendar-panel__controls {
+  border-top: 1px solid rgba(140, 163, 167, 0.2);
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.calendar-panel__tabs {
   display: flex;
-  gap: 8px;
+}
+
+.calendar-panel__navigation {
+  gap: 7px;
+}
+
+.calendar-panel__navigation .button {
+  font-size: 0.57rem;
+  padding: 8px 11px;
+}
+
+.calendar-panel__arrow {
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  padding: 7px 12px !important;
+}
+
+.home__section-heading {
+  border-bottom: 1px solid rgba(140, 163, 167, 0.24);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+}
+
+.home__section-eyebrow {
+  color: #e98125;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 7px;
+}
+
+.home__section-heading h2 {
+  color: #eef4f3;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.home__cards {
+  display: grid;
+  gap: 10px;
+}
+
+.home__empty {
+  border: 1px dashed rgba(140, 163, 167, 0.3);
+  color: #8ca3a7;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  padding: 22px 18px;
+}
+
+.home__empty span {
+  color: #e98125;
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
 }
 
 .task-card__action {
@@ -76,16 +146,32 @@
 }
 
 @media (max-width: 650px) {
-  .task-card {
+  .calendar-panel {
+    padding-inline: 14px;
+  }
+
+  .calendar-panel__topline,
+  .calendar-panel__controls {
     align-items: flex-start;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .task-card__content {
-    min-width: calc(100% - 52px);
+  .calendar-panel__controls {
+    padding-bottom: 16px;
   }
 
-  .task-card__actions {
-    margin-left: 52px;
+  .calendar-panel__tabs,
+  .calendar-panel__navigation {
+    width: 100%;
   }
+
+  .calendar-panel__tabs {
+    justify-content: space-between;
+  }
+
+  .calendar-panel__navigation {
+    justify-content: flex-end;
+  }
+
 }
