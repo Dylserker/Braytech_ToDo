@@ -1,3 +1,4 @@
+import ProgressBar from '../ProgressBar/ProgressBar'
 import './Header.css'
 
 function Header() {
@@ -20,20 +21,32 @@ function Header() {
           <span className="header-nav__index">01</span>
           Planning
         </a>
-        <a className="header-nav__link" href="#succes">
+        <a className="header-nav__link" href="/achievements">
           <span className="header-nav__index">02</span>
           Succès
         </a>
-        <a className="header-nav__link" href="#contact">
+        <a className="header-nav__link" href="/contact">
           <span className="header-nav__index">03</span>
           Contact
         </a>
       </nav>
 
-      <div className="header-status" aria-label="Système opérationnel">
-        <span className="header-status__dot" />
-        <span className="header-status__label">SYSTÈME EN LIGNE</span>
-        <span className="header-status__code">BT-07</span>
+      <div className="profile-menu">
+        <div className="profile-menu__card">
+          <a className="profile-menu__profile-link" href="/profile" aria-label="Accéder au profil">
+            <span className="profile-menu__card-avatar">
+              <img src="/profile-avatar.svg" alt="" />
+            </span>
+          </a>
+          <div className="profile-menu__details">
+            <div className="profile-menu__identity">
+              <strong>Gardien Braytech</strong>
+              <span>NIVEAU 07</span>
+            </div>
+            <ProgressBar value={720} max={1000} label="XP" />
+          </div>
+          <a className="profile-menu__logout" href="/login">Déconnexion</a>
+        </div>
       </div>
     </header>
   )

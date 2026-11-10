@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Button from '../../components/Buttons/Buttons'
 import Header from '../../components/Header/Header'
+import Footer from '../../components/Footer/Footer'
 import Modal from '../../components/Modals/Modal'
 import Tab from '../../components/Tabs/Tab'
 import TaskModal from '../../components/TaskModal/TaskModal'
@@ -326,6 +327,7 @@ function Plannings() {
         taskIndex={editingTaskIndex === null ? undefined : editingTaskIndex}
         onClose={() => setIsModalOpen(false)}
       />
+      <Footer />
     </>
   )
 }

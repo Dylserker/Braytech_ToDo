@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import Button from '../../components/Buttons/Buttons'
 import Card from '../../components/Cards/Cards'
+import Achievements from '../../components/Achievements/Achievements'
 import Header from '../../components/Header/Header'
+import Footer from '../../components/Footer/Footer'
 import TaskModal from '../../components/TaskModal/TaskModal'
 import { useTasks } from '../../context/TaskContext'
 import HomeLayout from '../../layouts/HomeLayout/HomeLayout'
@@ -85,13 +87,9 @@ function Home() {
           <section className="home__section" aria-labelledby="success-title">
             <div className="home__section-heading">
               <p className="home__section-eyebrow">02 / PROGRESSION</p>
-              <h2 id="success-title">Succès en cours</h2>
+              <h2 id="success-title">Succès proches de la réalisation</h2>
             </div>
-            <div className="home__cards">
-              <Card eyebrow="BRAYTECH / OBJECTIF" meta="0%" title="Aucun succès actif">
-                Les succès en cours apparaîtront ici.
-              </Card>
-            </div>
+            <Achievements tasks={tasks} preview />
           </section>
         </HomeLayout>
       </main>
@@ -101,6 +99,7 @@ function Home() {
         taskIndex={editingTaskIndex === null ? undefined : editingTaskIndex}
         onClose={() => setIsModalOpen(false)}
       />
+      <Footer />
     </>
   )
 }

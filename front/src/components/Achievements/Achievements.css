@@ -1,0 +1,159 @@
+.achievements {
+  background:
+    linear-gradient(125deg, rgba(52, 151, 164, 0.08), transparent 40%),
+    #101b20;
+  border: 1px solid rgba(140, 163, 167, 0.32);
+  overflow-x: auto;
+  position: relative;
+}
+
+.achievements::before {
+  background: #e98125;
+  content: '';
+  height: 2px;
+  left: 18px;
+  position: absolute;
+  top: -1px;
+  width: 42px;
+}
+
+.achievements__themes {
+  border-bottom: 1px solid rgba(140, 163, 167, 0.18);
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px 0;
+}
+
+.achievements__table {
+  border-collapse: collapse;
+  min-width: 430px;
+  text-align: left;
+  width: 100%;
+}
+
+.achievements--preview {
+  overflow: hidden;
+}
+
+.achievements--preview .achievements__table {
+  min-width: 0;
+}
+
+.achievements--preview .achievements__table thead {
+  display: none;
+}
+
+.achievements--preview th,
+.achievements--preview td {
+  padding: 10px 12px;
+}
+
+.achievements--preview tbody th {
+  min-width: 0;
+  width: 52%;
+}
+
+.achievements--preview tbody th span {
+  display: none;
+}
+
+.achievements--preview tbody strong {
+  font-size: 0.66rem;
+  margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.achievements--preview .achievement-progress {
+  gap: 7px;
+  min-width: 0;
+}
+
+.achievements--preview .achievement-progress__bar {
+  min-width: 28px;
+}
+
+.achievements--preview .achievement-status {
+  font-size: 0.52rem;
+}
+
+.achievements th,
+.achievements td {
+  border-bottom: 1px solid rgba(140, 163, 167, 0.18);
+  padding: 14px 16px;
+}
+
+.achievements thead th {
+  color: #64b7b7;
+  font: 0.55rem var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.achievements tbody tr:last-child th,
+.achievements tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.achievements tbody th {
+  font-weight: 400;
+  min-width: 145px;
+}
+
+.achievements tbody strong,
+.achievements tbody span,
+.achievements small {
+  display: block;
+}
+
+.achievements tbody strong {
+  color: #eef4f3;
+  font: 0.72rem var(--heading);
+  margin-bottom: 5px;
+}
+
+.achievements tbody th span {
+  color: #8ca3a7;
+  font-size: 0.63rem;
+}
+
+.achievement-progress {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+  min-width: 105px;
+}
+
+.achievement-progress__bar {
+  background: rgba(140, 163, 167, 0.2);
+  height: 5px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.achievement-progress__bar span {
+  background: #e98125;
+  height: 100%;
+  transition: width 180ms ease;
+}
+
+.achievement-progress small,
+.achievement-status {
+  color: #a7b8b8;
+  font: 0.58rem var(--mono);
+  white-space: nowrap;
+}
+
+.achievement-status--complete {
+  color: #52c3b0;
+}
+
+.sr-only {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+}

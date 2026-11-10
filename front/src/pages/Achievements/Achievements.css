@@ -1,0 +1,92 @@
+.achievements-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.achievements-page__main {
+  flex: 1;
+  padding: 76px 24px 96px;
+}
+
+.achievements-page__eyebrow,
+.achievements-page__section-heading p {
+  color: #64b7b7;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+}
+
+.achievements-page__heading,
+.achievements-page__eyebrow,
+.achievements-page__main > section {
+  margin-inline: auto;
+  max-width: 960px;
+}
+
+.achievements-page__eyebrow {
+  width: 100%;
+}
+
+.achievements-page__heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.achievements-page__heading > div {
+  flex: 1;
+}
+
+.achievements-page__heading > span {
+  margin-top: 6px;
+}
+
+.achievements-page h1 {
+  font-size: 40px;
+  margin: 0 0 12px;
+}
+
+.achievements-page__heading > span {
+  color: #e98125;
+  font: 0.58rem var(--mono);
+  letter-spacing: 0.1em;
+}
+
+.achievements-page__main > section {
+  margin-top: 48px;
+}
+
+.achievements-page__section-heading {
+  border-bottom: 1px solid rgba(140, 163, 167, 0.24);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+}
+
+.achievements-page__section-heading p {
+  margin: 0 0 7px;
+}
+
+.achievements-page h2 {
+  color: #eef4f3;
+  font-size: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 650px) {
+  .achievements-page__main {
+    padding: 54px 18px 68px;
+  }
+
+  .achievements-page__heading {
+    gap: 18px;
+  }
+
+  .achievements-page h1 {
+    font-size: 32px;
+  }
+}
