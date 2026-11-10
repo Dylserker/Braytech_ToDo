@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import Button from '../../components/Buttons/Buttons'
 import Header from '../../components/Header/Header'
+import Modal from '../../components/Modals/Modal'
 import Tab from '../../components/Tabs/Tab'
+import TaskModal from '../../components/TaskModal/TaskModal'
+import { useTasks } from '../../context/TaskContext'
 import PlanningLayout from '../../layouts/PlanningLayout/PlanningLayout'
 import './Plannings.css'
 
@@ -42,6 +45,10 @@ function getMonthDays(date: Date) {
 function Plannings() {
   const [calendarView, setCalendarView] = useState<CalendarView>('semaine')
   const [selectedDate, setSelectedDate] = useState(() => new Date())
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTaskIndex, setEditingTaskIndex] = useState<number | null>(null)
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(null)
+  const { tasks, removeTask } = useTasks()
 
   const moveDate = (direction: -1 | 1) => {
     const nextDate = new Date(selectedDate)
@@ -58,6 +65,20 @@ function Plannings() {
     year: 'numeric',
   }).format(selectedDate)
 
+  const taskMatchesDate = (taskDate: Date, date: Date) =>
+    taskDate.toDateString() === date.toDateString()
+
+  const renderTask = (task: (typeof tasks)[number], taskIndex: number) => (
+    <button
+      className="calendar-task"
+      key={`${task.title}-${task.createdAt}`}
+      type="button"
+      onClick={() => setSelectedTaskIndex(taskIndex)}
+    >
+      {task.title}
+    </button>
+  )
+
   const renderCalendar = () => {
     if (calendarView === 'jour') {
       return (
@@ -65,7 +86,14 @@ function Plannings() {
           {Array.from({ length: 24 }, (_, hour) => (
             <div className="calendar__hour" key={hour}>
               <span>{String(hour).padStart(2, '0')}:00</span>
-              <div />
+              <div>
+                {tasks
+                  .filter((task) => {
+                    const taskDate = new Date(task.createdAt)
+                    return taskMatchesDate(taskDate, selectedDate) && taskDate.getHours() === hour
+                  })
+                  .map((task) => renderTask(task, tasks.indexOf(task)))}
+              </div>
             </div>
           ))}
         </div>
@@ -89,9 +117,25 @@ function Plannings() {
             })}
           </div>
           <div className="calendar__week-body">
-            {Array.from({ length: 84 }, (_, slot) => (
-              <div key={slot} />
-            ))}
+            {Array.from({ length: 24 * 7 }, (_, slot) => {
+              const hour = Math.floor(slot / 7)
+              const dayIndex = slot % 7
+              const date = new Date(monday)
+              date.setDate(monday.getDate() + dayIndex)
+              return (
+                <div className="calendar__week-slot" key={`${date.toISOString()}-${hour}`}>
+                  <span className="calendar__week-hour">
+                    {dayIndex === 0 ? `${String(hour).padStart(2, '0')}:00` : ''}
+                  </span>
+                  {tasks
+                    .filter((task) => {
+                      const taskDate = new Date(task.createdAt)
+                      return taskMatchesDate(taskDate, date) && taskDate.getHours() === hour
+                    })
+                    .map((task) => renderTask(task, tasks.indexOf(task)))}
+                </div>
+              )
+            })}
           </div>
         </div>
       )
@@ -106,7 +150,33 @@ function Plannings() {
           <div className="calendar__month-grid">
             {getMonthDays(selectedDate).map((day, index) => (
               <div className="calendar__month-day" key={`${day}-${index}`}>
-                {day && <span>{day}</span>}
+                {day && (
+                  <>
+                    <span>{day}</span>
+                    {(() => {
+                      const taskCount = tasks.filter((task) => {
+                        const taskDate = new Date(task.createdAt)
+                        return (
+                          taskDate.getFullYear() === selectedDate.getFullYear() &&
+                          taskDate.getMonth() === selectedDate.getMonth() &&
+                          taskDate.getDate() === day
+                        )
+                      }).length
+                      return taskCount > 0 ? (
+                        <button
+                          className="calendar-count"
+                          type="button"
+                          onClick={() => {
+                            setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day))
+                            setCalendarView('jour')
+                          }}
+                        >
+                          {taskCount} tâche{taskCount > 1 ? 's' : ''}
+                        </button>
+                      ) : null
+                    })()}
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -121,6 +191,27 @@ function Plannings() {
             <span>{String(index + 1).padStart(2, '0')}</span>
             <strong>{month}</strong>
             <small>{selectedDate.getFullYear()}</small>
+            {(() => {
+              const taskCount = tasks.filter((task) => {
+                const taskDate = new Date(task.createdAt)
+                return (
+                  taskDate.getFullYear() === selectedDate.getFullYear() &&
+                  taskDate.getMonth() === index
+                )
+              }).length
+              return taskCount > 0 ? (
+                <button
+                  className="calendar-count"
+                  type="button"
+                  onClick={() => {
+                    setSelectedDate(new Date(selectedDate.getFullYear(), index, 1))
+                    setCalendarView('mois')
+                  }}
+                >
+                  {taskCount} tâche{taskCount > 1 ? 's' : ''}
+                </button>
+              ) : null
+            })()}
           </div>
         ))}
       </div>
@@ -141,7 +232,10 @@ function Plannings() {
                 <p className="planning-panel__eyebrow">BRAYTECH EXOSCIENCE / TIMELINE</p>
                 <strong>{periodLabel}</strong>
               </div>
-              <Button type="button" onClick={() => window.location.assign('/#new-task')}>
+              <Button type="button" onClick={() => {
+                setEditingTaskIndex(null)
+                setIsModalOpen(true)
+              }}>
                 + Nouvelle tâche
               </Button>
             </div>
@@ -189,6 +283,49 @@ function Plannings() {
           </section>
         </PlanningLayout>
       </main>
+      <Modal
+        eyebrow="Interaction détectée"
+        isOpen={selectedTaskIndex !== null}
+        title="Gérer la tâche"
+        onClose={() => setSelectedTaskIndex(null)}
+      >
+        {selectedTaskIndex !== null && tasks[selectedTaskIndex] && (
+          <div className="task-actions-modal">
+            <p className="task-actions-modal__task">{tasks[selectedTaskIndex].title}</p>
+            <p className="task-actions-modal__meta">
+              {tasks[selectedTaskIndex].category} / {tasks[selectedTaskIndex].mission}
+            </p>
+            <div className="task-form__actions">
+              <Button
+                type="button"
+                variant="danger"
+                onClick={() => {
+                  removeTask(selectedTaskIndex)
+                  setSelectedTaskIndex(null)
+                }}
+              >
+                Supprimer
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setEditingTaskIndex(selectedTaskIndex)
+                  setSelectedTaskIndex(null)
+                  setIsModalOpen(true)
+                }}
+              >
+                Modifier
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+      <TaskModal
+        isOpen={isModalOpen}
+        task={editingTaskIndex === null ? undefined : tasks[editingTaskIndex]}
+        taskIndex={editingTaskIndex === null ? undefined : editingTaskIndex}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   )
 }

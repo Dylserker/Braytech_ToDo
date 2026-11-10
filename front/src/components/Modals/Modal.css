@@ -88,6 +88,10 @@
   resize: vertical;
 }
 
+.task-form__datetime {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .task-form__grid {
   display: grid;
   gap: 18px;
@@ -98,6 +102,10 @@
 .task-form__field textarea:focus {
   border-color: #52c3b0;
   outline: 2px solid rgba(82, 195, 176, 0.18);
+}
+
+.task-form__field input:invalid {
+  border-color: rgba(224, 92, 75, 0.75);
 }
 
 .task-form__actions {
