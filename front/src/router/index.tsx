@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { createBrowserRouter } from 'react-router'
 import Home from '../pages/Home/Home'
 import Plannings from '../pages/Plannings/Plannings'
@@ -7,23 +8,28 @@ import Login from '../pages/Login/Login'
 import Register from '../pages/Register/Register'
 import Profile from '../pages/Profile/Profile'
 import Settings from '../pages/Settings/Settings'
+import ProtectedRoute from './ProtectedRoute'
+
+const protectedElement = (element: ReactNode) => (
+  <ProtectedRoute>{element}</ProtectedRoute>
+)
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: protectedElement(<Home />),
   },
   {
     path: '/planning',
-    element: <Plannings />,
+    element: protectedElement(<Plannings />),
   },
   {
     path: '/contact',
-    element: <Contact />,
+    element: protectedElement(<Contact />),
   },
   {
     path: '/achievements',
-    element: <Achievements />,
+    element: protectedElement(<Achievements />),
   },
   {
     path: '/login',
@@ -35,10 +41,10 @@ export const router = createBrowserRouter([
   },
   {
     path: '/profile',
-    element: <Profile />,
+    element: protectedElement(<Profile />),
   },
   {
     path: '/settings',
-    element: <Settings />,
+    element: protectedElement(<Settings />),
   },
 ])

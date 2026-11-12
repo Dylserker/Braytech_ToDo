@@ -4,6 +4,14 @@
   text-align: left;
 }
 
+.auth-form__provider {
+  color: #a7b8b8;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  margin: 0;
+  text-align: left;
+}
+
 .auth-form label {
   color: #a7b8b8;
   display: grid;
@@ -39,6 +47,8 @@
   margin-top: 5px;
   padding: 13px 18px;
   text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
 }
 
 .auth-form__submit:hover {
@@ -47,6 +57,12 @@
 
 .auth-form__error {
   color: #e88b7d;
+  font: 0.65rem var(--mono);
+  margin: 0;
+}
+
+.auth-form__success {
+  color: #52c3b0;
   font: 0.65rem var(--mono);
   margin: 0;
 }

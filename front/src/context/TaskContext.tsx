@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Task } from '../types/task'
 
 type TaskContextValue = {
@@ -11,7 +11,20 @@ type TaskContextValue = {
 const TaskContext = createContext<TaskContextValue | null>(null)
 
 export function TaskProvider({ children }: { children: ReactNode }) {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const storedTasks = localStorage.getItem('braytech-tasks')
+    if (!storedTasks) return []
+    try {
+      return JSON.parse(storedTasks) as Task[]
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('braytech-tasks', JSON.stringify(tasks))
+  }, [tasks])
+
   const value = useMemo(
     () => ({
       tasks,

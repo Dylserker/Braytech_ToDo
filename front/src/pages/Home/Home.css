@@ -1,177 +1,100 @@
 .home {
   align-items: center;
+  background: #101b20;
+  color: #eef4f3;
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 90px 24px;
 }
 
-.home__eyebrow {
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
-}
-
-.home h1 {
-  margin-bottom: 14px;
-}
-
-.home__intro {
-  margin-bottom: 28px;
-}
-
-.home__heading {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  max-width: 960px;
-  text-align: center;
+.home__shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  max-width: 1180px;
   width: 100%;
 }
 
-.home__heading h1 {
-  font-size: 40px;
-  margin: 0 0 10px;
+.home__sidebar {
+  background: rgba(16, 27, 32, 0.96);
+  border-right: 1px solid rgba(140, 163, 167, 0.24);
+  min-height: calc(100svh - 82px);
+  padding: 40px 24px;
 }
 
-.calendar-panel {
-  background:
-    linear-gradient(110deg, rgba(52, 151, 164, 0.1), transparent 42%),
-    #101b20;
-  border: 1px solid rgba(236, 138, 38, 0.42);
-  margin-top: 16px;
-  max-width: 760px;
-  padding: 20px 22px 0;
-  text-align: left;
-  width: 100%;
-}
-
-.calendar-panel__topline,
-.calendar-panel__controls,
-.calendar-panel__navigation {
-  align-items: center;
-  display: flex;
-}
-
-.calendar-panel__topline {
-  justify-content: space-between;
-}
-
-.calendar-panel__eyebrow {
+.home__eyebrow,
+.home__kicker,
+.home__section-eyebrow,
+.home__sidebar-label {
   color: #64b7b7;
   font-family: var(--mono);
   font-size: 0.58rem;
   letter-spacing: 0.14em;
-  margin-bottom: 7px;
 }
 
-.calendar-panel strong {
-  color: #eef4f3;
-  font-family: var(--heading);
-  font-size: 1rem;
-  font-weight: 400;
-  text-transform: capitalize;
-}
+.home__eyebrow { color: #e98125; margin: 0 0 34px; }
+.home__status { color: #8ca3a7; font: 0.62rem var(--mono); display: flex; align-items: center; gap: 8px; }
+.home__status span,
+.home__metrics-sync i,
+.task-card__proof i { background: #e98125; border-radius: 50%; display: inline-block; height: 7px; width: 7px; }
+.home__sidebar-rule { background: rgba(140, 163, 167, 0.24); height: 1px; margin: 34px 0 28px; }
+.home__sidebar-label { margin: 0 0 8px; }
+.home__guardian { color: #eef4f3; display: block; font: 400 0.9rem var(--heading); }
+.home__sidebar-copy { color: #8ca3a7; font-size: 0.72rem; line-height: 1.65; margin: 10px 0 28px; }
+.home__sync { border-bottom: 1px solid rgba(140, 163, 167, 0.24); border-top: 1px solid rgba(140, 163, 167, 0.24); display: grid; gap: 5px; padding: 16px 0; }
+.home__sync span, .home__sync small { color: #8ca3a7; font: 0.58rem var(--mono); }
+.home__sync strong { color: #eef4f3; font: 400 0.8rem var(--heading); }
+.home__sidebar-link { color: #e98125; display: flex; font: 0.66rem var(--mono); justify-content: space-between; margin-top: 28px; text-decoration: none; }
 
-.calendar-panel__controls {
-  border-top: 1px solid rgba(140, 163, 167, 0.2);
-  justify-content: space-between;
-  margin-top: 20px;
-}
+.home__content { min-width: 0; padding: 54px clamp(28px, 5vw, 72px) 72px; }
+.home__kicker { color: #64b7b7; margin: 0 0 13px; }
+.home__heading { align-items: flex-end; display: flex; gap: 30px; justify-content: space-between; }
+.home__heading h1 { color: #eef4f3; font: 400 clamp(2.2rem, 5vw, 4.1rem)/0.98 var(--heading); letter-spacing: -0.04em; margin: 0 0 20px; }
+.home__heading h1 em { color: #e98125; font-style: normal; }
+.home__intro { color: #8ca3a7; font-size: 0.88rem; max-width: 520px; }
+.home__heading .button { white-space: nowrap; }
+.home__heading .button span { font-size: 1.2rem; line-height: 0; margin-right: 7px; }
 
-.calendar-panel__tabs {
-  display: flex;
-}
+.home__metrics { border-bottom: 1px solid rgba(140, 163, 167, 0.24); border-top: 1px solid rgba(140, 163, 167, 0.24); display: grid; grid-template-columns: repeat(4, 1fr); margin: 48px 0 54px; }
+.home__metrics > div { border-right: 1px solid rgba(140, 163, 167, 0.24); display: grid; gap: 7px; padding: 17px 18px; }
+.home__metrics > div:last-child { border-right: 0; }
+.home__metrics span { color: #8ca3a7; font: 0.59rem var(--mono); }
+.home__metrics strong { color: #eef4f3; font: 400 1.2rem var(--heading); }
+.home__metrics-sync strong { align-items: center; color: #e98125; display: flex; font: 0.68rem var(--mono); gap: 7px; }
 
-.calendar-panel__navigation {
-  gap: 7px;
-}
+.home__section-heading { align-items: end; border-bottom: 1px solid rgba(140, 163, 167, 0.24); display: flex; justify-content: space-between; margin-bottom: 0; padding-bottom: 14px; }
+.home__section-eyebrow { color: #e98125; margin: 0 0 7px; }
+.home__section-heading h2 { color: #eef4f3; font-size: 1.2rem; margin: 0; }
+.home__task-count, .home__section-heading a { color: #8ca3a7; font: 0.62rem var(--mono); text-decoration: none; }
+.home__filters { display: flex; gap: 8px; margin: 18px 0; overflow-x: auto; }
+.home__filters button { background: transparent; border: 1px solid rgba(140, 163, 167, 0.3); color: #8ca3a7; cursor: pointer; font: 0.62rem var(--mono); padding: 8px 12px; white-space: nowrap; }
+.home__filters button:hover, .home__filters button.is-active { background: #e98125; border-color: #e98125; color: #101b20; }
+.home__cards { display: grid; gap: 10px; }
+.home__empty { align-items: center; border: 1px dashed rgba(140, 163, 167, 0.3); color: #8ca3a7; display: flex; gap: 16px; justify-content: space-between; padding: 24px; }
+.home__empty-mark { align-items: center; border: 1px solid #e98125; color: #e98125; display: flex; font-size: 1.2rem; height: 34px; justify-content: center; width: 34px; }
+.home__empty strong { color: #eef4f3; font: 400 0.8rem var(--heading); }
+.home__empty p { font-size: 0.72rem; margin-top: 4px; }
+.task-card__proof { color: #e98125; display: block; font: 0.6rem var(--mono); margin-top: 12px; }
+.task-card__proof i { margin-right: 6px; }
+.home__section--secondary { margin-top: 64px; }
+.home__section--secondary .achievements { margin-top: 18px; }
+.task-card__action { font-size: 0.56rem; padding: 8px 10px; }
 
-.calendar-panel__navigation .button {
-  font-size: 0.57rem;
-  padding: 8px 11px;
-}
-
-.calendar-panel__arrow {
-  font-size: 1rem !important;
-  line-height: 1 !important;
-  padding: 7px 12px !important;
-}
-
-.home__section-heading {
-  border-bottom: 1px solid rgba(140, 163, 167, 0.24);
-  margin-bottom: 14px;
-  padding-bottom: 12px;
-}
-
-.home__section-eyebrow {
-  color: #e98125;
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  margin-bottom: 7px;
-}
-
-.home__section-heading h2 {
-  color: #eef4f3;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.home__cards {
-  display: grid;
-  gap: 10px;
-}
-
-.home__empty {
-  border: 1px dashed rgba(140, 163, 167, 0.3);
-  color: #8ca3a7;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  padding: 22px 18px;
-}
-
-.home__empty span {
-  color: #e98125;
-  display: block;
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-}
-
-.task-card__action {
-  font-size: 0.56rem;
-  padding: 8px 10px;
+@media (max-width: 850px) {
+  .home__shell { grid-template-columns: 175px minmax(0, 1fr); }
+  .home__content { padding-inline: 32px; }
+  .home__metrics { grid-template-columns: repeat(2, 1fr); }
+  .home__metrics > div:nth-child(2) { border-right: 0; }
+  .home__metrics > div:nth-child(-n + 2) { border-bottom: 1px solid rgba(140, 163, 167, 0.24); }
 }
 
 @media (max-width: 650px) {
-  .calendar-panel {
-    padding-inline: 14px;
-  }
-
-  .calendar-panel__topline,
-  .calendar-panel__controls {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .calendar-panel__controls {
-    padding-bottom: 16px;
-  }
-
-  .calendar-panel__tabs,
-  .calendar-panel__navigation {
-    width: 100%;
-  }
-
-  .calendar-panel__tabs {
-    justify-content: space-between;
-  }
-
-  .calendar-panel__navigation {
-    justify-content: flex-end;
-  }
-
+  .home__shell { display: block; }
+  .home__sidebar { border-bottom: 1px solid rgba(140, 163, 167, 0.24); border-right: 0; min-height: auto; padding: 24px 20px; }
+  .home__sidebar-rule, .home__sidebar-copy, .home__sidebar-link { display: none; }
+  .home__eyebrow { margin-bottom: 14px; }
+  .home__content { padding: 34px 20px 52px; }
+  .home__heading { align-items: flex-start; flex-direction: column; }
+  .home__metrics { margin: 34px 0 42px; }
+  .home__empty { align-items: flex-start; flex-wrap: wrap; }
+  .home__empty .button { margin-left: 50px; }
 }

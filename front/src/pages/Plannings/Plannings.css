@@ -131,8 +131,8 @@
 }
 
 .calendar--day {
-  max-height: 600px;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .calendar__hour {

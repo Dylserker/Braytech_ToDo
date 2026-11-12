@@ -222,7 +222,7 @@ function Plannings() {
   return (
     <>
       <Header />
-      <main className="planning">
+      <main className={`planning${calendarView === 'jour' ? ' planning--day' : ''}`}>
         <p className="planning__eyebrow">BRAYTECH / PLANNING</p>
         <h1>Votre planning</h1>
         <p className="planning__intro">Organisez vos prochaines missions avec précision.</p>

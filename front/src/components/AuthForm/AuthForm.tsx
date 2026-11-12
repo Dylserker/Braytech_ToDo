@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import './AuthForm.css'
 
 type AuthMode = 'login' | 'register'
@@ -10,60 +8,37 @@ type AuthFormProps = {
 }
 
 function AuthForm({ mode }: AuthFormProps) {
-  const navigate = useNavigate()
-  const [error, setError] = useState('')
   const isRegister = mode === 'register'
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError('')
-
-    const formData = new FormData(event.currentTarget)
-    if (isRegister && formData.get('password') !== formData.get('passwordConfirmation')) {
-      setError('Les mots de passe ne correspondent pas.')
-      return
-    }
-
-    navigate('/')
-  }
+  const bungieStatus = new URLSearchParams(window.location.search).get('bungie')
+  const bungieStartUrl = 'https://localhost:3000/api/v1/auth/bungie/start'
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      {isRegister && (
-        <label>
-          Identifiant
-          <input name="username" type="text" autoComplete="username" required />
-        </label>
-      )}
-      <label>
-        Adresse e-mail
-        <input name="email" type="email" autoComplete="email" required />
-      </label>
-      <label>
-        Mot de passe
-        <input name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} required />
-      </label>
-      {isRegister && (
-        <label>
-          Confirmer le mot de passe
-          <input name="passwordConfirmation" type="password" autoComplete="new-password" required />
-        </label>
-      )}
-      {error && (
+    <div className="auth-form">
+      <p className="auth-form__provider">
+        {isRegister
+          ? 'Votre compte Bungie sera utilisé pour créer votre espace Braytech ToDo.'
+          : 'Connectez votre compte Bungie pour retrouver vos activités et votre progression.'}
+      </p>
+      {bungieStatus === 'error' && (
         <p className="auth-form__error" role="alert">
-          {error}
+          La connexion Bungie n’a pas abouti. Vérifiez la redirection autorisée puis réessayez.
         </p>
       )}
-      <button className="auth-form__submit" type="submit">
-        {isRegister ? 'Créer mon accès' : 'Ouvrir ma session'}
-      </button>
+      {bungieStatus === 'connected' && (
+        <p className="auth-form__success" role="status">
+          Compte Bungie connecté. Vous pouvez revenir à votre planning.
+        </p>
+      )}
+      <a className="auth-form__submit" href={bungieStartUrl}>
+        Continuer avec Bungie
+      </a>
       <p className="auth-form__redirect">
-        {isRegister ? 'Déjà membre ?' : 'Pas encore de compte ?'}{' '}
+        {isRegister ? 'Déjà membre ?' : 'Vous souhaitez créer un espace ?'}{' '}
         <Link to={isRegister ? '/login' : '/register'}>
-          {isRegister ? 'Se connecter' : 'Créer un compte'}
+          {isRegister ? 'Se connecter' : 'Commencer'}
         </Link>
       </p>
-    </form>
+    </div>
   )
 }
 

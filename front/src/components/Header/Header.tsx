@@ -1,7 +1,51 @@
+import { useEffect, useState } from 'react'
 import ProgressBar from '../ProgressBar/ProgressBar'
 import './Header.css'
 
+type BungieSession = {
+  authenticated: boolean
+  profile?: {
+    displayName: string
+    profilePictureUrl: string | null
+  } | null
+  appProfile?: {
+    level: number
+    xp: number
+    xpToNextLevel: number
+  }
+  memberships?: {
+    bungieNetUser?: { displayName?: string }
+    destinyMemberships?: Array<{ displayName?: string }>
+  }
+}
+
 function Header() {
+  const [session, setSession] = useState<BungieSession | null>(null)
+
+  useEffect(() => {
+    fetch('https://localhost:3000/api/v1/auth/bungie/session', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() as Promise<BungieSession> : null)
+      .then((nextSession) => setSession(nextSession))
+      .catch(() => setSession(null))
+  }, [])
+
+  const displayName = session?.profile?.displayName
+    ?? session?.memberships?.bungieNetUser?.displayName
+    ?? session?.memberships?.destinyMemberships?.[0]?.displayName
+    ?? 'Gardien Braytech'
+  const profilePictureUrl = session?.profile?.profilePictureUrl ?? '/profile-avatar.svg'
+  const level = session?.appProfile?.level ?? 1
+  const xp = session?.appProfile?.xp ?? 0
+  const xpToNextLevel = session?.appProfile?.xpToNextLevel ?? 1000
+
+  const handleLogout = async () => {
+    await fetch('https://localhost:3000/api/v1/auth/bungie/logout', {
+      credentials: 'include',
+      method: 'POST',
+    })
+    window.location.assign('/login')
+  }
+
   return (
     <header className="site-header">
       <a className="brand" href="/" aria-label="Braytech Exoscience - accueil">
@@ -33,19 +77,19 @@ function Header() {
 
       <div className="profile-menu">
         <div className="profile-menu__card">
-          <a className="profile-menu__profile-link" href="/profile" aria-label="Accéder au profil">
+            <a className="profile-menu__profile-link" href="/profile" aria-label="Accéder au profil">
             <span className="profile-menu__card-avatar">
-              <img src="/profile-avatar.svg" alt="" />
+              <img src={profilePictureUrl} alt="" />
             </span>
           </a>
           <div className="profile-menu__details">
             <div className="profile-menu__identity">
-              <strong>Gardien Braytech</strong>
-              <span>NIVEAU 07</span>
+              <strong>{displayName}</strong>
+              <span>NIVEAU {String(level).padStart(2, '0')}</span>
             </div>
-            <ProgressBar value={720} max={1000} label="XP" />
+            <ProgressBar value={xp} max={xpToNextLevel} label="XP" />
           </div>
-          <a className="profile-menu__logout" href="/login">Déconnexion</a>
+          <button className="profile-menu__logout" type="button" onClick={handleLogout}>Déconnexion</button>
         </div>
       </div>
     </header>

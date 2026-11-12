@@ -1,6 +1,4 @@
 import AuthForm from '../../components/AuthForm/AuthForm'
-import Footer from '../../components/Footer/Footer'
-import Header from '../../components/Header/Header'
 import './Auth.css'
 
 type AuthProps = {
@@ -12,9 +10,19 @@ function Auth({ mode }: AuthProps) {
 
   return (
     <div className="auth-page">
-      <Header />
       <main className="auth-page__main">
         <div className="auth-page__panel">
+          <a className="auth-page__brand" href="/" aria-label="Braytech ToDo - accueil">
+            <span className="auth-page__brand-mark" aria-hidden="true">
+              <span className="auth-page__brand-ring" />
+              <span className="auth-page__brand-core" />
+              <span className="auth-page__brand-spark">✦</span>
+            </span>
+            <span className="auth-page__brand-copy">
+              <strong>BRAYTECH ToDo</strong>
+              <span>EXOSCIENCE / SYSTEMS</span>
+            </span>
+          </a>
           <p className="auth-page__eyebrow">
             BRAYTECH / {isRegister ? 'ENREGISTREMENT' : 'AUTHENTIFICATION'}
           </p>
@@ -27,7 +35,6 @@ function Auth({ mode }: AuthProps) {
           <AuthForm mode={mode} />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
