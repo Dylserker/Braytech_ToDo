@@ -1,23 +1,8 @@
 import { useEffect, useState } from 'react'
 import ProgressBar from '../ProgressBar/ProgressBar'
 import './Header.css'
-
-type BungieSession = {
-  authenticated: boolean
-  profile?: {
-    displayName: string
-    profilePictureUrl: string | null
-  } | null
-  appProfile?: {
-    level: number
-    xp: number
-    xpToNextLevel: number
-  }
-  memberships?: {
-    bungieNetUser?: { displayName?: string }
-    destinyMemberships?: Array<{ displayName?: string }>
-  }
-}
+import logo from "../../assets/logo.svg";
+import type { BungieSession } from '../../types/BungieSession';
 
 function Header() {
   const [session, setSession] = useState<BungieSession | null>(null)
@@ -49,11 +34,7 @@ function Header() {
   return (
     <header className="site-header">
       <a className="brand" href="/" aria-label="Braytech Exoscience - accueil">
-        <span className="brand-mark" aria-hidden="true">
-          <span className="brand-mark__ring" />
-          <span className="brand-mark__core" />
-          <span className="brand-mark__spark">✦</span>
-        </span>
+        <img className="brand-mark" src={logo} alt="" width={80} height={80} />
         <span className="brand-copy">
           <span className="brand-copy__name">BRAYTECH ToDo</span>
           <span className="brand-copy__division">EXOSCIENCE / SYSTEMS</span>

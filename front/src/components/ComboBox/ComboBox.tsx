@@ -1,9 +1,5 @@
-import type { SelectHTMLAttributes } from 'react'
 import './ComboBox.css'
-
-type ComboBoxProps = SelectHTMLAttributes<HTMLSelectElement> & {
-  label: string
-}
+import type { ComboBoxProps } from '../../types/ComboBoxProps'
 
 function ComboBox({ label, id, children, ...props }: ComboBoxProps) {
   return (
