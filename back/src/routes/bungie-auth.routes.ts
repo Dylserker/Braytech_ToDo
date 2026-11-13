@@ -58,13 +58,47 @@ type BungieCharacter = {
   dateLastPlayed?: string
 }
 
-type DestinyProfilePayload = {
-  Response?: {
-    characters?: { data?: Record<string, BungieCharacter> }
-    profileProgression?: { data?: { seasonProgressions?: Record<string, { level?: number }> } }
-    seasonPass?: { data?: { seasonPasses?: Record<string, { level?: number }> } }
+type DestinyProgression = {
+  level?: number
+}
+
+type DestinyProfileResponse = {
+  profile?: {
+    data?: {
+      currentSeasonHash?: number
+      currentSeasonPassHash?: number
+    }
+  }
+  characters?: { data?: Record<string, BungieCharacter> }
+  characterProgressions?: {
+    data?: Record<string, { progressions?: Record<string, DestinyProgression> }>
   }
 }
+
+type DestinySeasonPassReference = {
+  seasonPassHash?: number
+  seasonPassStartDate?: string
+  seasonPassEndDate?: string
+}
+
+type DestinySeasonDefinition = {
+  seasonPassHash?: number
+  seasonPassProgressionHash?: number
+  seasonPassList?: DestinySeasonPassReference[]
+}
+
+type DestinySeasonPassDefinition = {
+  rewardProgressionHash?: number
+  prestigeProgressionHash?: number
+}
+
+type SeasonRankHashes = {
+  rewardProgressionHash?: number
+  prestigeProgressionHash?: number
+}
+
+const seasonRankHashCache = new Map<string, { expiresAt: number, hashes: SeasonRankHashes }>()
+const seasonRankHashCacheLifetime = 12 * 60 * 60 * 1000
 
 function getCookies(request: Request) {
   return parse(request.headers.cookie ?? '')
@@ -118,6 +152,89 @@ function getBungieProfile(memberships: BungieMembershipsResponse | null): Bungie
       ? profilePicturePath.startsWith('http') ? profilePicturePath : `https://www.bungie.net${profilePicturePath}`
       : null,
   }
+}
+
+async function getBungieDefinition<T>(entityType: string, hash: number) {
+  const response = await fetch(`${env.BUNGIE_API_BASE_URL}/Destiny2/Manifest/${entityType}/${hash}/`, {
+    headers: { 'X-API-Key': env.BUNGIE_API_KEY },
+  })
+  if (!response.ok) return null
+  const payload = await response.json() as { ErrorCode?: number, Response?: T }
+  if (payload.ErrorCode !== undefined && payload.ErrorCode !== 1) return null
+  return payload.Response ?? null
+}
+
+function isProgressionHash(hash: number | undefined): hash is number {
+  return typeof hash === 'number' && hash > 0
+}
+
+function selectActiveSeasonPassHash(
+  passes: DestinySeasonPassReference[] | undefined,
+  fallbackHash: number | undefined,
+) {
+  const now = Date.now()
+  const activePass = passes?.find((pass) => {
+    if (!isProgressionHash(pass.seasonPassHash)) return false
+    const start = Date.parse(pass.seasonPassStartDate ?? '')
+    const end = Date.parse(pass.seasonPassEndDate ?? '')
+    return Number.isFinite(start) && Number.isFinite(end) && start <= now && now < end
+  })
+  if (isProgressionHash(activePass?.seasonPassHash)) return activePass.seasonPassHash
+  if (isProgressionHash(fallbackHash)) return fallbackHash
+  return [...(passes ?? [])].reverse().find((pass) => isProgressionHash(pass.seasonPassHash))?.seasonPassHash
+}
+
+async function getSeasonRankHashes(profile: DestinyProfileResponse | undefined): Promise<SeasonRankHashes> {
+  const profileData = profile?.profile?.data
+  const cacheKey = String(profileData?.currentSeasonHash ?? profileData?.currentSeasonPassHash ?? 'current')
+  const cached = seasonRankHashCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) return cached.hashes
+
+  const season = isProgressionHash(profileData?.currentSeasonHash)
+    ? await getBungieDefinition<DestinySeasonDefinition>('DestinySeasonDefinition', profileData.currentSeasonHash)
+    : null
+  const seasonPassHash = selectActiveSeasonPassHash(
+    season?.seasonPassList,
+    profileData?.currentSeasonPassHash ?? season?.seasonPassHash,
+  )
+  const seasonPass = isProgressionHash(seasonPassHash)
+    ? await getBungieDefinition<DestinySeasonPassDefinition>('DestinySeasonPassDefinition', seasonPassHash)
+    : null
+  const rewardProgressionHash = isProgressionHash(seasonPass?.rewardProgressionHash)
+    ? seasonPass.rewardProgressionHash
+    : isProgressionHash(season?.seasonPassProgressionHash) ? season.seasonPassProgressionHash : undefined
+  const prestigeProgressionHash = isProgressionHash(seasonPass?.prestigeProgressionHash)
+    ? seasonPass.prestigeProgressionHash
+    : undefined
+  const hashes = { rewardProgressionHash, prestigeProgressionHash }
+  if (rewardProgressionHash !== undefined || prestigeProgressionHash !== undefined) {
+    seasonRankHashCache.set(cacheKey, { expiresAt: Date.now() + seasonRankHashCacheLifetime, hashes })
+  }
+  return hashes
+}
+
+function readProgressionLevel(
+  progressions: Record<string, DestinyProgression>,
+  hash: number | undefined,
+) {
+  if (hash === undefined) return null
+  const level = progressions[String(hash)]?.level
+  return typeof level === 'number' ? level : null
+}
+
+async function getSeasonRank(profile: DestinyProfileResponse | undefined, characterId: string | undefined) {
+  const progressions = (characterId
+    ? profile?.characterProgressions?.data?.[characterId]?.progressions
+    : undefined)
+    ?? Object.values(profile?.characterProgressions?.data ?? {}).find((entry) => entry.progressions)?.progressions
+    ?? {}
+  const { rewardProgressionHash, prestigeProgressionHash } = await getSeasonRankHashes(profile)
+  const rewardLevel = readProgressionLevel(progressions, rewardProgressionHash)
+  const prestigeLevel = prestigeProgressionHash === rewardProgressionHash
+    ? null
+    : readProgressionLevel(progressions, prestigeProgressionHash)
+  if (rewardLevel === null && prestigeLevel === null) return null
+  return (rewardLevel ?? 0) + (prestigeLevel ?? 0)
 }
 
 function isValidState(receivedState: string | undefined, expectedState: string | undefined) {
@@ -205,7 +322,7 @@ bungieAuthRouter.get('/characters', async (request, response, next) => {
     const profileUrl = new URL(
       `${env.BUNGIE_API_BASE_URL}/Destiny2/${session.membershipType}/Profile/${session.membershipId}/`,
     )
-    profileUrl.searchParams.set('components', '100,200,202,500')
+    profileUrl.searchParams.set('components', '100,200,202')
     const profileResponse = await fetch(profileUrl, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
@@ -215,25 +332,21 @@ bungieAuthRouter.get('/characters', async (request, response, next) => {
     if (!profileResponse.ok) {
       throw new Error(`Bungie character profile request failed with status ${profileResponse.status}`)
     }
-    const payload = await profileResponse.json() as DestinyProfilePayload
-    const characters = Object.values(payload.Response?.characters?.data ?? {})
-      .sort((left, right) => (right.dateLastPlayed ?? '').localeCompare(left.dateLastPlayed ?? ''))
+    const payload = await profileResponse.json() as { ErrorCode?: number, Response?: DestinyProfileResponse }
+    if (payload.ErrorCode !== undefined && payload.ErrorCode !== 1) {
+      throw new Error(`Bungie character profile request failed with error code ${payload.ErrorCode}`)
+    }
+    const characterEntries = Object.entries(payload.Response?.characters?.data ?? {})
+      .sort(([, left], [, right]) => (right.dateLastPlayed ?? '').localeCompare(left.dateLastPlayed ?? ''))
       .slice(0, 3)
-      .map((character) => ({
-        classType: character.classType ?? null,
-        light: character.light ?? null,
-        emblemUrl: character.emblemPath
-          ? `https://www.bungie.net${character.emblemPath}`
-          : null,
-      }))
-    const seasonProgressions = Object.values(
-      payload.Response?.profileProgression?.data?.seasonProgressions ?? {},
-    )
-    const seasonPasses = Object.values(payload.Response?.seasonPass?.data?.seasonPasses ?? {})
-    const seasonRank = [...seasonProgressions, ...seasonPasses]
-      .map((progression) => progression.level)
-      .find((level): level is number => typeof level === 'number')
-      ?? null
+    const characters = characterEntries.map(([, character]) => ({
+      classType: character.classType ?? null,
+      light: character.light ?? null,
+      emblemUrl: character.emblemPath
+        ? `https://www.bungie.net${character.emblemPath}`
+        : null,
+    }))
+    const seasonRank = await getSeasonRank(payload.Response, characterEntries[0]?.[0])
     response.json({ characters, seasonRank })
   } catch (error) {
     next(error)

@@ -232,22 +232,51 @@
 }
 
 .profile-menu__logout {
-  background: transparent;
-  border-left: 1px solid rgba(140, 163, 167, 0.22);
-  color: #e88b7d;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  background: #0b1216;
+  border: 1px solid #e98125;
+  border-radius: 0;
+  color: #eef4f3;
+  cursor: pointer;
   font: 0.62rem var(--mono);
-  letter-spacing: 0.08em;
-  padding: 8px 4px 8px 12px;
+  letter-spacing: 0.14em;
+  padding: 7px 10px;
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease,
+    transform 100ms ease;
 }
 
-.profile-menu__logout:hover,
-.profile-menu__logout:focus-visible,
+.profile-menu__logout__icon {
+  color: #e98125;
+  filter: drop-shadow(0 0 6px rgba(233, 129, 37, 0.55));
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.profile-menu__logout:hover {
+  background: rgba(233, 129, 37, 0.16);
+  border-color: #f29a3d;
+  color: #f5f8f6;
+  box-shadow: 0 0 18px rgba(233, 129, 37, 0.4);
+}
+
+.profile-menu__logout:active {
+  background: rgba(233, 129, 37, 0.35);
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.profile-menu__logout:focus-visible {
+  outline: 2px solid #52c3b0;
+  outline-offset: 2px;
+}
+
 .profile-menu__profile-link:focus-visible {
-  color: #f0a095;
   outline: 2px solid #52c3b0;
   outline-offset: 2px;
 }
@@ -299,7 +328,12 @@
 
   .profile-menu__logout {
     font-size: 0.52rem;
-    padding-left: 8px;
+    padding: 6px 8px;
+    gap: 5px;
+  }
+
+  .profile-menu__logout__icon {
+    font-size: 0.5rem;
   }
 
   .header-nav {

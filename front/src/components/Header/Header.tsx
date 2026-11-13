@@ -89,7 +89,10 @@ function Header() {
             </div>
             <ProgressBar value={xp} max={xpToNextLevel} label="XP" />
           </div>
-          <button className="profile-menu__logout" type="button" onClick={handleLogout}>Déconnexion</button>
+          <button className="profile-menu__logout" type="button" onClick={handleLogout}>
+            <span className="profile-menu__logout__icon" aria-hidden="true">⏻</span>
+            Déconnexion
+          </button>
         </div>
       </div>
     </header>
