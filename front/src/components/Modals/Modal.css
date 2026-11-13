@@ -92,6 +92,27 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.task-form__schedule {
+  display: grid;
+  gap: 12px;
+}
+
+.task-form__schedule-group {
+  background: rgba(22, 37, 42, 0.45);
+  border: 1px solid rgba(140, 163, 167, 0.18);
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.task-form__schedule-title {
+  color: #64b7b7;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .task-form__grid {
   display: grid;
   gap: 18px;

@@ -71,6 +71,7 @@ CREATE TABLE tasks (
   variant VARCHAR(120) NULL,
   status ENUM('pending', 'completed_automatically', 'sync_to_check') NOT NULL DEFAULT 'pending',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  ends_at DATETIME(3) NULL,
   updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   completed_at DATETIME(3) NULL,
   PRIMARY KEY (id),

@@ -6,6 +6,7 @@ export type Task = {
   difficulty: string
   mission: string
   createdAt: string
+  endsAt?: string | null
   activityDefinitionId?: number
   activityHash?: number
   activityVariant?: string | null

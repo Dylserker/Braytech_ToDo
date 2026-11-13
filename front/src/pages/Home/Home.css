@@ -73,7 +73,8 @@
 .home__empty-mark { align-items: center; border: 1px solid #e98125; color: #e98125; display: flex; font-size: 1.2rem; height: 34px; justify-content: center; width: 34px; }
 .home__empty strong { color: #eef4f3; font: 400 0.8rem var(--heading); }
 .home__empty p { font-size: 0.72rem; margin-top: 4px; }
-.task-card__proof { color: #e98125; display: block; font: 0.6rem var(--mono); margin-top: 12px; }
+.task-card__schedule { color: #52c3b0; display: block; font: 0.6rem var(--mono); margin-top: 6px; }
+.task-card__proof { color: #e98125; display: block; font: 0.6rem var(--mono); margin-top: 8px; }
 .task-card__proof i { margin-right: 6px; }
 .home__section--secondary { margin-top: 64px; }
 .home__section--secondary .achievements { margin-top: 18px; }

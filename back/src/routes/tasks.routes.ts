@@ -19,6 +19,7 @@ const taskSchema = z.object({
   description: z.string().trim().max(65_535),
   difficulty: z.string().trim().max(80),
   createdAt: z.string().datetime(),
+  endsAt: z.string().datetime().nullable().optional(),
   activity: activitySchema,
 })
 
@@ -60,7 +61,7 @@ tasksRouter.get('/', async (request, response, next) => {
   try {
     const [rows] = await database.execute<mysql.RowDataPacket[]>(
       `SELECT tasks.id, tasks.title, tasks.description, tasks.category, tasks.mission,
-        tasks.difficulty, tasks.created_at, activity_definitions.bungie_activity_hash,
+        tasks.difficulty, tasks.created_at, tasks.ends_at, activity_definitions.bungie_activity_hash,
         activity_definitions.variant
        FROM tasks
        LEFT JOIN activity_definitions ON activity_definitions.id = tasks.activity_definition_id
@@ -75,6 +76,7 @@ tasksRouter.get('/', async (request, response, next) => {
       mission: task.mission,
       difficulty: task.difficulty ?? '',
       createdAt: new Date(task.created_at).toISOString(),
+      endsAt: task.ends_at ? new Date(task.ends_at).toISOString() : null,
       activityDefinitionId: task.activity_definition_id,
       activityHash: task.bungie_activity_hash,
       activityVariant: task.variant,
@@ -97,8 +99,8 @@ tasksRouter.post('/', async (request, response, next) => {
     const activityDefinitionId = await getActivityDefinitionId(activity)
     const [result] = await database.execute<mysql.ResultSetHeader>(
       `INSERT INTO tasks
-        (user_id, activity_definition_id, title, description, category, mission, difficulty, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (user_id, activity_definition_id, title, description, category, mission, difficulty, created_at, ends_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         session.userId,
         activityDefinitionId,
@@ -108,6 +110,7 @@ tasksRouter.post('/', async (request, response, next) => {
         activity.name,
         task.difficulty || activity.difficulty,
         new Date(task.createdAt),
+        task.endsAt ? new Date(task.endsAt) : null,
       ],
     )
     response.status(201).json({ id: result.insertId, ...task, category: activity.category, mission: activity.name, activityDefinitionId })
@@ -130,7 +133,7 @@ tasksRouter.patch('/:id', async (request, response, next) => {
     const activityDefinitionId = await getActivityDefinitionId(activity)
     const [result] = await database.execute<mysql.ResultSetHeader>(
       `UPDATE tasks SET activity_definition_id = ?, title = ?, description = ?, category = ?,
-        mission = ?, difficulty = ?, created_at = ? WHERE id = ? AND user_id = ?`,
+        mission = ?, difficulty = ?, created_at = ?, ends_at = ? WHERE id = ? AND user_id = ?`,
       [
         activityDefinitionId,
         task.title,
@@ -139,6 +142,7 @@ tasksRouter.patch('/:id', async (request, response, next) => {
         activity.name,
         task.difficulty || activity.difficulty,
         new Date(task.createdAt),
+        task.endsAt ? new Date(task.endsAt) : null,
         taskId,
         session.userId,
       ],

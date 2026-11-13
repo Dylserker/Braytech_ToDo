@@ -39,6 +39,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             description: task.description,
             difficulty: task.difficulty,
             createdAt: task.createdAt,
+            endsAt: task.endsAt ?? null,
             activity: {
               bungieActivityHash: task.activityHash,
               name: task.mission,
@@ -60,6 +61,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             description: task.description,
             difficulty: task.difficulty,
             createdAt: task.createdAt,
+            endsAt: task.endsAt ?? null,
             activity: {
               bungieActivityHash: task.activityHash,
               name: task.mission,
