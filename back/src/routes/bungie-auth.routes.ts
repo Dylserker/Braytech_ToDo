@@ -15,6 +15,8 @@ export type BungieSession = {
   refreshToken?: string
   expiresAt: number
   userId: number
+  membershipId: string
+  membershipType: number
   memberships: unknown
   profile: BungieProfile | null
   appProfile: AppProfile
@@ -47,6 +49,21 @@ type BungieMembershipsResponse = {
     membershipType?: number
   }>
   primaryMembershipId?: string
+}
+
+type BungieCharacter = {
+  classType?: number
+  light?: number
+  emblemPath?: string
+  dateLastPlayed?: string
+}
+
+type DestinyProfilePayload = {
+  Response?: {
+    characters?: { data?: Record<string, BungieCharacter> }
+    profileProgression?: { data?: { seasonProgressions?: Record<string, { level?: number }> } }
+    seasonPass?: { data?: { seasonPasses?: Record<string, { level?: number }> } }
+  }
 }
 
 function getCookies(request: Request) {
@@ -156,6 +173,8 @@ bungieAuthRouter.get('/callback', async (request, response) => {
       refreshToken: token.refresh_token,
       expiresAt: Date.now() + token.expires_in * 1000,
       userId,
+      membershipId: primaryMembership.membershipId,
+      membershipType: primaryMembership.membershipType,
       memberships,
       profile,
       appProfile: { level: 1, xp: 0, xpToNextLevel: 1000 },
@@ -172,6 +191,52 @@ bungieAuthRouter.get('/callback', async (request, response) => {
   } catch (requestError) {
     console.error(requestError)
     response.redirect(frontendErrorUrl)
+  }
+})
+
+bungieAuthRouter.get('/characters', async (request, response, next) => {
+  const session = getAuthenticatedSession(request)
+  if (!session) {
+    response.status(401).json({ error: 'Authentication required' })
+    return
+  }
+
+  try {
+    const profileUrl = new URL(
+      `${env.BUNGIE_API_BASE_URL}/Destiny2/${session.membershipType}/Profile/${session.membershipId}/`,
+    )
+    profileUrl.searchParams.set('components', '100,200,202,500')
+    const profileResponse = await fetch(profileUrl, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'X-API-Key': env.BUNGIE_API_KEY,
+      },
+    })
+    if (!profileResponse.ok) {
+      throw new Error(`Bungie character profile request failed with status ${profileResponse.status}`)
+    }
+    const payload = await profileResponse.json() as DestinyProfilePayload
+    const characters = Object.values(payload.Response?.characters?.data ?? {})
+      .sort((left, right) => (right.dateLastPlayed ?? '').localeCompare(left.dateLastPlayed ?? ''))
+      .slice(0, 3)
+      .map((character) => ({
+        classType: character.classType ?? null,
+        light: character.light ?? null,
+        emblemUrl: character.emblemPath
+          ? `https://www.bungie.net${character.emblemPath}`
+          : null,
+      }))
+    const seasonProgressions = Object.values(
+      payload.Response?.profileProgression?.data?.seasonProgressions ?? {},
+    )
+    const seasonPasses = Object.values(payload.Response?.seasonPass?.data?.seasonPasses ?? {})
+    const seasonRank = [...seasonProgressions, ...seasonPasses]
+      .map((progression) => progression.level)
+      .find((level): level is number => typeof level === 'number')
+      ?? null
+    response.json({ characters, seasonRank })
+  } catch (error) {
+    next(error)
   }
 })
 
