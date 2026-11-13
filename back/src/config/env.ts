@@ -15,6 +15,11 @@ const envSchema = z.object({
   BUNGIE_OAUTH_AUTHORIZE_URL: z.string().url(),
   BUNGIE_OAUTH_REDIRECT_URI: z.string().url(),
   BUNGIE_API_BASE_URL: z.string().url().default('https://www.bungie.net/Platform'),
+  DB_HOST: z.string().default('127.0.0.1'),
+  DB_PORT: z.coerce.number().int().min(1).max(65_535).default(3306),
+  DB_USER: z.string().min(1),
+  DB_PASSWORD: z.string().min(1),
+  DB_NAME: z.string().default('braytech_todo'),
 })
 
 export const env = envSchema.parse(process.env)

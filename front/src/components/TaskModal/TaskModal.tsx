@@ -2,8 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react'
 import Button from '../Buttons/Buttons'
 import ComboBox from '../ComboBox/ComboBox'
 import Modal from '../Modals/Modal'
-import { DESTINY_CATEGORIES, type DestinyCategory } from '../../constants/destinyCategories'
 import { useTasks } from '../../context/TaskContext'
+import { apiRequest } from '../../functions/api'
 import type { Task } from '../../types/task'
 
 type TaskModalProps = {
@@ -11,6 +11,13 @@ type TaskModalProps = {
   task?: Task
   taskIndex?: number
   onClose: () => void
+}
+
+type Activity = {
+  id: number
+  name: string
+  category: string
+  difficulties: string[]
 }
 
 function getLocalDateTimeValues(value?: string) {
@@ -30,11 +37,14 @@ function TaskModal({ isOpen, task, taskIndex, onClose }: TaskModalProps) {
   const { addTask, updateTask } = useTasks()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState<DestinyCategory | ''>('')
+  const [category, setCategory] = useState('')
   const [mission, setMission] = useState('')
   const [difficulty, setDifficulty] = useState('')
   const [taskDate, setTaskDate] = useState('')
   const [taskTime, setTaskTime] = useState('')
+  const [activitiesByCategory, setActivitiesByCategory] = useState<Record<string, Activity[]>>({})
+  const [catalogError, setCatalogError] = useState('')
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     const dateTime = getLocalDateTimeValues(task?.createdAt)
@@ -45,18 +55,30 @@ function TaskModal({ isOpen, task, taskIndex, onClose }: TaskModalProps) {
     setDifficulty(task?.difficulty ?? '')
     setTaskDate(dateTime.date)
     setTaskTime(dateTime.time)
+    setSubmitError('')
   }, [task, isOpen])
 
-  const missions = category ? DESTINY_CATEGORIES[category] : []
-  const selectedMission = missions.find((item) => item.name === mission)
-  const difficulties = selectedMission && 'difficulties' in selectedMission
-    ? selectedMission.difficulties
-    : []
+  useEffect(() => {
+    if (!isOpen || Object.keys(activitiesByCategory).length > 0) return
+    apiRequest('/activities')
+      .then(async (response) => {
+        const payload = await response.json() as { categories: Record<string, Activity[]> }
+        setActivitiesByCategory(payload.categories)
+      })
+      .catch((error: unknown) => {
+        setCatalogError(error instanceof Error ? error.message : 'Le catalogue Bungie est indisponible')
+      })
+  }, [activitiesByCategory, isOpen])
+
+  const activities = category ? activitiesByCategory[category] ?? [] : []
+  const categories = Object.keys(activitiesByCategory)
+  const selectedActivity = activities.find((item) => item.name === mission)
+  const difficulties = selectedActivity?.difficulties ?? []
   const minimumDateTime = getMinimumDateTimeValues()
   const isCreatingInThePast =
     taskIndex === undefined && new Date(`${taskDate}T${taskTime}`) < new Date()
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (
       !title.trim() ||
@@ -67,17 +89,28 @@ function TaskModal({ isOpen, task, taskIndex, onClose }: TaskModalProps) {
       isCreatingInThePast ||
       (difficulties.length > 0 && !difficulty)
     ) return
-    const nextTask = {
+    const activityHash = selectedActivity?.id ?? task?.activityHash
+    if (activityHash === undefined) {
+      setSubmitError('Cette activité Bungie ne possède pas d’identifiant exploitable.')
+      return
+    }
+    const nextTask: Task = {
       title: title.trim(),
       description: description.trim(),
       category,
       mission,
       difficulty,
       createdAt: new Date(`${taskDate}T${taskTime}`).toISOString(),
+      activityHash,
+      activityVariant: null,
     }
-    if (taskIndex === undefined) addTask(nextTask)
-    else updateTask(taskIndex, nextTask)
-    onClose()
+    try {
+      if (taskIndex === undefined) await addTask(nextTask)
+      else await updateTask(taskIndex, { ...nextTask, id: task?.id })
+      onClose()
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'La tâche n’a pas pu être enregistrée')
+    }
   }
 
   return (
@@ -93,15 +126,17 @@ function TaskModal({ isOpen, task, taskIndex, onClose }: TaskModalProps) {
           <input id="task-title" required value={title} onChange={(event) => setTitle(event.target.value)} />
         </div>
         <div className="task-form__grid">
-          <ComboBox id="task-category" label="Catégorie" required value={category}
-            onChange={(event) => { setCategory(event.target.value as DestinyCategory | ''); setMission(''); setDifficulty('') }}>
+          <ComboBox id="task-category" label="Catégorie d’activité" required value={category}
+            onChange={(event) => { setCategory(event.target.value); setMission(''); setDifficulty('') }}>
             <option value="">Sélectionner</option>
-            {Object.keys(DESTINY_CATEGORIES).map((item) => <option key={item} value={item}>{item}</option>)}
+            {categories.map((item) => (
+              <option key={item} value={item}>{item} ({activitiesByCategory[item]?.length ?? 0})</option>
+            ))}
           </ComboBox>
-          <ComboBox id="task-mission" label="Mission" required disabled={!category} value={mission}
+          <ComboBox id="task-mission" label="Activité" required disabled={!category} value={mission}
             onChange={(event) => { setMission(event.target.value); setDifficulty('') }}>
             <option value="">{category ? 'Sélectionner' : 'Choisir une catégorie'}</option>
-            {missions.map((item) => <option key={item.name} value={item.name}>{item.name}</option>)}
+            {activities.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
           </ComboBox>
           <ComboBox id="task-difficulty" label="Difficulté" required={difficulties.length > 0}
             disabled={!mission || difficulties.length === 0} value={difficulty} onChange={(event) => setDifficulty(event.target.value)}>
@@ -109,6 +144,8 @@ function TaskModal({ isOpen, task, taskIndex, onClose }: TaskModalProps) {
             {difficulties.map((item) => <option key={item} value={item}>{item}</option>)}
           </ComboBox>
         </div>
+        {catalogError && <p role="alert">{catalogError}</p>}
+        {submitError && <p role="alert">{submitError}</p>}
         <div className="task-form__grid task-form__datetime">
           <div className="task-form__field">
             <label htmlFor="task-date">Journée</label>

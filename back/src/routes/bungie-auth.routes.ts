@@ -2,6 +2,7 @@ import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { Router, type Request } from 'express'
 import { parse } from 'cookie'
 import { env } from '../config/env.js'
+import { ensureBungieUser } from '../database.js'
 
 const bungieAuthRouter = Router()
 const sessions = new Map<string, BungieSession>()
@@ -9,10 +10,11 @@ const stateCookieName = 'bungie_oauth_state'
 const sessionCookieName = 'braytech_session'
 const oauthStateLifetime = 10 * 60 * 1000
 
-type BungieSession = {
+export type BungieSession = {
   accessToken: string
   refreshToken?: string
   expiresAt: number
+  userId: number
   memberships: unknown
   profile: BungieProfile | null
   appProfile: AppProfile
@@ -136,11 +138,24 @@ bungieAuthRouter.get('/callback', async (request, response) => {
     const token = await exchangeCodeForToken(code)
     const memberships = await getMemberships(token.access_token)
     const profile = getBungieProfile(memberships)
+    const primaryMembership = memberships?.destinyMemberships?.find(
+      (membership) => membership.membershipId === memberships.primaryMembershipId,
+    ) ?? memberships?.destinyMemberships?.[0]
+    if (!primaryMembership?.membershipId || primaryMembership.membershipType === undefined) {
+      throw new Error('Bungie account has no usable Destiny membership')
+    }
+    const userId = await ensureBungieUser(
+      primaryMembership.membershipId,
+      primaryMembership.membershipType,
+      profile?.displayName ?? 'Gardien Braytech',
+      profile?.profilePictureUrl ?? null,
+    )
     const sessionId = randomUUID()
     sessions.set(sessionId, {
       accessToken: token.access_token,
       refreshToken: token.refresh_token,
       expiresAt: Date.now() + token.expires_in * 1000,
+      userId,
       memberships,
       profile,
       appProfile: { level: 1, xp: 0, xpToNextLevel: 1000 },
@@ -160,12 +175,19 @@ bungieAuthRouter.get('/callback', async (request, response) => {
   }
 })
 
-bungieAuthRouter.get('/session', (request, response) => {
+export function getAuthenticatedSession(request: Request) {
   const sessionId = getCookies(request)[sessionCookieName]
   const session = sessionId ? sessions.get(sessionId) : undefined
-
   if (!session || session.expiresAt <= Date.now()) {
     if (sessionId) sessions.delete(sessionId)
+    return null
+  }
+  return session
+}
+
+bungieAuthRouter.get('/session', (request, response) => {
+  const session = getAuthenticatedSession(request)
+  if (!session) {
     response.status(401).json({ authenticated: false })
     return
   }

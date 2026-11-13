@@ -1,10 +1,12 @@
-import type { DestinyCategory } from '../constants/destinyCategories'
-
 export type Task = {
+  id?: number
   title: string
   description: string
-  category: DestinyCategory
+  category: string
   difficulty: string
   mission: string
   createdAt: string
+  activityDefinitionId?: number
+  activityHash?: number
+  activityVariant?: string | null
 }
